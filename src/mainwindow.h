@@ -66,6 +66,7 @@ protected:
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    static bool s_boot_nextgame;
 
 private:
     Ui::MainWindow *ui;

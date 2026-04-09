@@ -10,6 +10,7 @@
 // staticメンバ変数 初期化
 MainWindow* MainWindow::s_instance = nullptr;
 QtMessageHandler MainWindow::s_prevMsgHandler = nullptr;
+bool MainWindow::s_boot_nextgame = false;
 
 QString MainWindow::getTime()
 {
@@ -42,6 +43,10 @@ void MainWindow::keyPressEvent([[maybe_unused]] QKeyEvent *event)
     //     this->ui->Field->resize((static_cast<float>(this->ui->Field->size().height())/ui->Field->field.size.y())*ui->Field->field.size.x(),this->ui->Field->size().height());
     //     this->resize(QSize(this->ui->Field->width() + left_margin + right_margin,this->size().height()));
     // }
+    if (event->key()==Qt::Key_N && this->win != GameSystem::WINNER::CONTINUE) {
+        MainWindow::s_boot_nextgame = true;
+        this->close();
+    }
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -51,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->startup = new StartupDialog();
     this->win = GameSystem::WINNER::CONTINUE;
+    this->clock = nullptr;
 
     //Functorベースでは動作しないため、Stringベースでconnect
     connect(this,SIGNAL(destroyed()),this,SLOT(SaveFile()));
@@ -249,7 +255,7 @@ void MainWindow::s_messageHandler(QtMsgType type, const QMessageLogContext& cont
 MainWindow::~MainWindow()
 {
     //試合を停止
-    this->clock->stop();
+    if (this->clock != nullptr) this->clock->stop();
 
     //BGMを停止
     if(!silent && this->startup->music_text != "None")bgm->stop();
@@ -258,23 +264,6 @@ MainWindow::~MainWindow()
 	qInstallMessageHandler(s_prevMsgHandler);
     s_prevMsgHandler = nullptr;
     s_instance = nullptr;
-
-    auto ret = QMessageBox::information(this, "", tr("続けてサーバーを起動しますか。"), QMessageBox::Yes, QMessageBox::No);
-
-    delete ui;
-
-	//サーバー再起動
-    if(ret == QMessageBox::Yes){
-        QStringList argv = QApplication::arguments();
-
-        //サーバーのファイルパスを取得
-        QString command = argv.takeAt(0);
-
-        // MainWindowを閉じた後に、
-        //コマンドライン引数付きでもう一度サーバーを起動する
-        QProcess::startDetached(command, argv);
-    }
-
 }
 
 void MainWindow::SaveFile()

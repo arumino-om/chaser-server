@@ -67,3 +67,6 @@ win32:{
 mac:{
     ICON += icon.icns
 }
+macx {
+    QMAKE_CXXFLAGS += -Wno-error=implicit-function-declaration
+}

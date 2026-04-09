@@ -1,3 +1,7 @@
+#ifdef __APPLE__
+#include <arm_acle.h>
+#endif
+
 #include "mainwindow.h"
 #include <QApplication>
 #include <QTranslator>
@@ -16,8 +20,11 @@ int main(int argc, char *argv[])
     (void) qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
     a.installTranslator(&qtTranslator);
 
-    MainWindow w;
-    w.show();
+    while (true) {
+        MainWindow w;
+        w.show();
 
-    return a.exec();
+        auto res = a.exec();
+        if (!MainWindow::s_boot_nextgame) return res;
+    }
 }
