@@ -20,11 +20,8 @@ int main(int argc, char *argv[])
     (void) qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
     a.installTranslator(&qtTranslator);
 
-    while (true) {
-        MainWindow w;
-        w.show();
+    MainWindow w;
+    w.show();
 
-        auto res = a.exec();
-        if (!MainWindow::s_boot_nextgame) return res;
-    }
+    return a.exec();
 }

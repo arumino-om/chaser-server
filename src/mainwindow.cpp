@@ -5,6 +5,7 @@
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QRandomGenerator>
+#include <iostream>
 #include "Definition.h"
 
 // staticメンバ変数 初期化
@@ -573,11 +574,12 @@ void MainWindow::StartAnimation()
     ui->Field->RefreshOverlay();
 
     QPoint pos[2];
+
+    std::cout << "ANIMATION TYPE: " << ANIMATION_TYPE << std::endl;
     if(ANIMATION_TYPE == 0){
         //ランダムにワサッて
         //一度に2マス表示させるのですわ
         int i_max = 2;
-        if(timer == 1)i_max ++;
         for(int i=0;i<i_max;i++){
             do{
                 pos[i].setX(QRandomGenerator::global()->generate() % this->startup->map.size.x());
